@@ -1,47 +1,56 @@
-const d=document;
-const dq=(s)=>d.querySelector(s);
-const cd=()=>d.createElement("div");
-const gb=dq(".board-module_board");
-const sa=(e,...a)=>e.setAttribute(...a);
-const sc=(e,c)=>sa(e,"class",c);
-const ac=(e,c)=>e.appendChild(c);
-for(let i=0;i<30;i++){
-        const t=cd();
-        sc(t,"tile");
-        sa(t,"style",`--i:${i%5}`);
-        const ti=cd();
-        sc(ti,"tile-inner");
-        const tf=cd();
-        sc(tf,"tile-front");
-        const tb=cd();
-        sc(tb,"tile-back");
-        ac(ti,tf);
-        ac(ti,tb);
-        ac(t,ti);
-        ac(gb,t);
+const querySelector=(s)=>document.querySelector(s);
+const createDiv=()=>document.createElement("div");
+const gb=querySelector(".board-module_board");
+const setAttribute=(e,...a)=>e.setAttribute(...a);
+const setClass=(e,c)=>setAttribute(e,"class",c);
+const appendChild=(e,c)=>e.appendChild(c);
+
+/**
+ * for each tile, create the structure
+ * <div class="tile">
+ *      <div class="tile-inner">
+ *              <div class="tile-front" />
+ *              <div class="tile-back" />
+ *      </div>
+ *  </div>
+ */
+for(let i = 0; i < 30; i++){
+        const tile = createDiv();
+        setClass(tile, "tile");
+        setAttribute(tile, "style",`--i:${i%5}`);
+        const tileInner = createDiv();
+        setClass(tileInner,"tile-inner");
+        const tileFront = createDiv();
+        setClass(tileFront,"tile-front");
+        const tileBack = createDiv();
+        setClass(tileBack,"tile-back");
+        appendChild(tileInner,tileFront);
+        appendChild(tileInner,tileBack);
+        appendChild(tile,tileInner);
+        appendChild(gb,tile);
 }
 
-const kb=dq(".keyboard");
-const krs=["QWERTYUIOP","ASDFGHJKL","-ZXCVBNM="].map(s=>s.split(""));
-for(const kr of krs) {
-        const r=cd();
-        sa(r,"class","keyboard-row");
-        for(const kl of kr) {
-                const k=cd();
-                sa(k,"class","key");
-                if(['=','-'].includes(kl)){
-                        sa(k,"style","min-width:65px;font-size:1.1rem");
-                        k.textContent=kl==='='?"ENTER":"←";
+const keyboardDiv=querySelector(".keyboard");
+const keyboardRows=["QWERTYUIOP","ASDFGHJKL","-ZXCVBNM="].map(s=>s.split(""));
+for(const keyboardRow of keyboardRows) {
+        const rowDiv=createDiv();
+        setAttribute(rowDiv,"class","keyboard-row");
+        for(const keyboardLetter of keyboardRow) {
+                const keyDiv=createDiv();
+                setAttribute(keyDiv,"class","key");
+                if(['=','-'].includes(keyboardLetter)){
+                        setAttribute(keyDiv,"style","min-width:65px;font-size:1.1rem");
+                        keyDiv.textContent=keyboardLetter==='='?"ENTER":"←";
                 }
-                else k.textContent=kl;
-                sa(k,"onclick",`sl("${kl}")`);
-                ac(r,k);
+                else keyDiv.textContent=keyboardLetter;
+                setAttribute(keyDiv,"onclick",`sl("${keyboardLetter}")`);
+                appendChild(rowDiv,keyDiv);
         }
-        ac(kb,r);
+        appendChild(keyboardDiv,rowDiv);
 }
 
 const ans = "CHILI";
-const te=Array(...dq(".board-module_board").childNodes);
+const te=Array(...querySelector(".board-module_board").childNodes);
 let cn=0;
 let cf=0;
 const sl=(c)=>{
@@ -60,7 +69,7 @@ const sl=(c)=>{
                                 else if(cnts[c]-->0) color="c9b458";
                                 const tb=tile.querySelector(".tile-back");
                                 tb.textContent=c;
-                                sa(tb,"style",`background-color:#${color}`);
+                                setAttribute(tb,"style",`background-color:#${color}`);
                                 tile.classList.add("flip");
                         }
                         cf+=5;
@@ -68,7 +77,7 @@ const sl=(c)=>{
                 return;
         }
         c=c.toUpperCase();
-        if(!krs.flat().includes(c)||cn>=cf+5)return;
+        if(!keyboardRows.flat().includes(c)||cn>=cf+5)return;
         te[cn++].querySelector(".tile-front").textContent=c;
 }
-d.addEventListener("keyup",(e)=>sl(e.key));
+document.addEventListener("keyup",(e)=>sl(e.key));
