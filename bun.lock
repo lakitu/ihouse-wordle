@@ -4,12 +4,10 @@
   "workspaces": {
     "": {
       "name": "mini-wordle",
-      "dependencies": {
-        "vite-plugin-singlefile": "^2.3.3",
-      },
       "devDependencies": {
-        "vite": "^8.0.12",
+        "vite": "^8.0.16",
         "vite-plugin-compression": "^0.5.1",
+        "vite-plugin-singlefile": "^2.3.3",
       },
     },
   },

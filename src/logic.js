@@ -1,21 +1,17 @@
-import wordList from '../differenceList.txt?inline'
+import wordList from '/public/differenceList.txt?raw'
+import answers from '/public/answers.json?raw'
 
-const base64 = wordList.split(',')[1]
-const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0))
-
-// Decompress gzip → VLC bytes → word Set
-const vlcBytes = new Uint8Array(await new Response(
-        new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))
-).arrayBuffer());
+const diffList = wordList.split(',');
 const validWords = new Set();
-for (let i = 0, num = 0; i < vlcBytes.length;) {
-        let n = 0;
-        do { n = (n << 7) + (vlcBytes[i] & 0x7f); } while (vlcBytes[i++] & 0x80);
-        num += n;
-        let word = '', m = num;
+validWords.add(diffList[0]);
+let prevWord = diffList[0].split("").reduce((acc,curr) => acc * 26 + (curr.charCodeAt(0) - 'a'.charCodeAt(0)), 0);
+for (let i = 1; i < diffList.length; i++) {
+        prevWord += Number(diffList[i]);
+        let word = '', m = prevWord;
         for (let j = 0; j < 5; j++) { word = String.fromCharCode((m % 26) + 97) + word; m = Math.floor(m / 26); }
         validWords.add(word);
 }
+
 
 let toastTimer;
 function showToast(msg) {
@@ -44,7 +40,7 @@ for(let i = 0; i < 30; i++){
 }
 
 const keyboardDiv=document.querySelector(".keyboard");
-const keyboardRows=["QWERTYUIOP","ASDFGHJKL","-ZXCVBNM="].map(s=>s.split(""));
+const keyboardRows=["QWERTYUIOP","ASDFGHJKL","=ZXCVBNM-"].map(s=>s.split(""));
 const keyElements={};
 for(const keyboardRow of keyboardRows) {
         const rowDiv=createDiv();
@@ -65,7 +61,7 @@ for(const keyboardRow of keyboardRows) {
 const keyPriority={absent:1,present:2,correct:3};
 const keyState={};
 
-const answerList = await fetch("./public/answers.json").then(res => res.json());
+const answerList = JSON.parse(answers);
 function dateToString(date) {
         const day = date.getDate().toString().padStart(2,"0");
         const month = (date.getMonth() + 1).toString().padStart(2,"0");

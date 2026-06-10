@@ -1,8 +1,7 @@
 :root {
-        --tile-size: min(90px, calc((100vh - 420px) / 6), calc((100vw - 80px) / 5));
-        /* fills available container width: (container - main padding - keyboard padding - 9 gaps) / 10 */
-        --key-size: calc((min(100vw, 750px) - 102px) / 10);
-        --key-height: clamp(44px, calc(var(--tile-size) * 0.9), 80px);
+        --tile-size: min(110px, calc((100vh - 220px) / 8.7), calc((100vw - 80px) / 5));
+        --key-size: max(30px, calc((5 * var(--tile-size) - 34px) / 10));
+        --key-height: clamp(44px, calc(var(--tile-size) * 0.9), 100px);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -37,7 +36,7 @@ main {
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         gap: 16px;
         padding: 16px;
         max-width: 750px;

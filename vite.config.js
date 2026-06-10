@@ -9,5 +9,6 @@ export default defineConfig({
         ],
         build: {
                 cssCodeSplit: false,
-        }
+        },
+        base: '/ihouse-wordle/'
 })
