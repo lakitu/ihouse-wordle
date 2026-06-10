@@ -5,173 +5,34 @@
                 <meta name="viewport" content="width=device-width, initial-scale=1">
                 <title>I-House Wordle</title>
 
-                <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        background: #fff;
-        font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
-}
-.board-module_board {
-        display: grid;
-        grid-template-columns: repeat(5, 62px);
-        grid-template-rows: repeat(6, 62px);
-        gap: 5px;
-        padding: 10px;
-        margin-bottom: 16px;
-}
-.tile {
-        perspective: 250px;
-        font-size: 2rem;
-        font-weight: bold;
-        text-transform: uppercase;
-        user-select: none;
-}
-.tile-inner {
-        width: 100%; height: 100%;
-        transform-style: preserve-3d;
-        transition: transform 0.5s linear;
-        transition-delay: calc(var(--i) * 300ms);
-}
-.tile.flip .tile-inner { transform: rotateX(-180deg); }
-.tile-front, .tile-back {
-        position: absolute;
-        width: 100%; height: 100%;
-        backface-visibility: hidden;
-        display: flex; align-items: center; justify-content: center;
-}
-.tile-front { border: 2px solid #d3d6da; color: #1a1a1b; }
-.tile-back { transform: rotateX(180deg); color: #fff; }
-
-.keyboard {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-}
-.keyboard-row {
-        display: flex;
-        flex-direction: row;
-        gap: 6px;
-}
-.key {
-        font-family: inherit;
-        font-size: 0.85rem;
-        font-weight: bold;
-        border: 0;
-        height: 58px;
-        min-width: 43px;
-        padding: 0 8px;
-        border-radius: 4px;
-        background-color: #d3d6da;
-        color: #1a1a1b;
-        cursor: pointer;
-        text-transform: uppercase;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-}
-.key:hover { background-color: #bbbfc3; }
-                </style>
+                <link rel="stylesheet" href="./src/style.css">
         </head>
         <body>
-                <main class="a">
-                        <div class="bc">
-                                <div style="display:flex;justify-content:center;">
-                                        <div class="board-module_board"></div>
-                                </div>
-                                <div class="keyboard"></div>
+                <header>
+                        <h1>I-House Wordle</h1>
+                </header>
+                <main>
+                        <div class="date-selector">
+                                <button id="date-today" class="date-btn active">Today</button>
+                                <button id="date-tomorrow" class="date-btn">Tomorrow</button>
                         </div>
+                        <div style="display:flex;justify-content:center;">
+                                <div class="board-module_board"></div>
+                        </div>
+                        <div class="keyboard"></div>
                 </main>
 
-                <script>
-                        /*
-                        <div class="tile">
-    <div class="tile-inner">
-      <div class="tile-front"></div>
-      <div class="tile-back"></div>
-    </div>
-  </div>
-                         */
-                        const d=document;
-                        const dq=(s)=>d.querySelector(s);
-                        const cd=()=>d.createElement("div");
-                        const gb=dq(".board-module_board");
-                        const sa=(e,...a)=>e.setAttribute(...a);
-                        const sc=(e,c)=>sa(e,"class",c);
-                        const ac=(e,c)=>e.appendChild(c);
-                        for(let i=0;i<30;i++){
-                                const t=cd();
-                                sc(t,"tile");
-                                sa(t,"style",`--i:${i%5}`);
-                                const ti=cd();
-                                sc(ti,"tile-inner");
-                                const tf=cd();
-                                sc(tf,"tile-front");
-                                const tb=cd();
-                                sc(tb,"tile-back");
-                                ac(ti,tf);
-                                ac(ti,tb);
-                                ac(t,ti);
-                                ac(gb,t);
-                        }
-
-                        const kb=dq(".keyboard");
-                        const krs=["QWERTYUIOP","ASDFGHJKL","-ZXCVBNM="].map(s=>s.split(""));
-                        for(const kr of krs) {
-                                const r=cd();
-                                sa(r,"class","keyboard-row");
-                                for(const kl of kr) {
-                                        const k=cd();
-                                        sa(k,"class","key");
-                                        if(['=','-'].includes(kl)){
-                                                sa(k,"style","min-width:65px;font-size:1.1rem");
-                                                k.textContent=kl==='='?"ENTER":"←";
-                                        }
-                                        else k.textContent=kl;
-                                        sa(k,"onclick",`sl("${kl}")`);
-                                        ac(r,k);
-                                }
-                                ac(kb,r);
-                        }
-
-                        const ans = "CHILI";
-                        const te=Array(...dq(".board-module_board").childNodes);
-                        let cn=0;
-                        let cf=0;
-                        const sl=(c)=>{
-                                console.log(c);
-                                if(["Backspace",'-'].includes(c)){
-                                        if(cn>cf) te[--cn].querySelector(".tile-front").textContent="";
-                                        return;
-                                }
-                                if(["Enter",'='].includes(c)){
-                                        if(cn==cf+5&&cn<=30){
-                                                const cnts=ans.split("").reduce((acc,c)=>{acc[c]=(acc[c]|0)+1;return acc},{});
-                                                for(let i=0;i<5;i++){
-                                                        const tile=te[cf+i];
-                                                        const c=tile.querySelector(".tile-front").textContent;
-                                                        let color="787c7e";
-                                                        if(c===ans.charAt(i)) color="6aaa64";
-                                                        else if(cnts[c]-->0) color="c9b458";
-                                                        const tb=tile.querySelector(".tile-back");
-                                                        tb.textContent=c;
-                                                        sa(tb,"style",`background-color:#${color}`);
-                                                        tile.classList.add("flip");
-                                                }
-                                                cf+=5;
-                                        }
-                                        return;
-                                }
-                                c=c.toUpperCase();
-                                if(!krs.flat().includes(c)||cn>=cf+5)return;
-                                te[cn++].querySelector(".tile-front").textContent=c;
-                        }
-                        d.addEventListener("keyup",(e)=>sl(e.key));
-                </script>
+                <div id="toast" class="toast"></div>
+                <div id="result-modal" class="modal">
+                        <div class="modal-card">
+                                <button id="modal-close" class="modal-close">✕</button>
+                                <h2 id="result-title"></h2>
+                                <p id="result-meta" class="result-meta"></p>
+                                <p id="result-score" class="result-score"></p>
+                                <pre id="result-grid" class="result-grid"></pre>
+                                <button id="share-btn" class="share-btn">Share</button>
+                        </div>
+                </div>
+                <script src="./src/logic.js" type="module"></script>
         </body>
 </html>
